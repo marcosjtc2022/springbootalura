@@ -1,0 +1,23 @@
+A partir da versão 2.5 do Spring Boot houve uma mudança em relação à inicialização do banco de dados via arquivo data.sql, sendo necessário adicionar uma nova propriedade no arquivo application.properties para que ela ocorra sem problemas:
+
+spring.jpa.defer-datasource-initialization=true
+COPIAR CÓDIGO
+Isso se torna necessário por conta da inicialização do banco de dados ocorrer antes da JPA realizar a criação das tabelas no banco de dados, causando com isso um erro, pois não será possível popular o banco sem que nele as tabelas estejam previamente criadas.
+
+A propriedade mencionada acima indica à JPA que o arquivo data.sql deve ser lido para popular o banco de dados após a criação das tabelas.
+
+Você pode conferir mais detalhes dessa mudança neste link: https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.5-Release-Notes#hibernate-and-datasql
+
+PRÓXIMA ATIVIDADE
+ícone Spring Boot API REST: construa uma API Spring Boot API REST: construa uma API
+37% 
+
+
+INSERT INTO USUARIO(nome, email, senha) VALUES('Aluno', 'aluno@email.com', '123456');
+
+INSERT INTO CURSO(nome, categoria) VALUES('Spring Boot', 'Programação');
+INSERT INTO CURSO(nome, categoria) VALUES('HTML 5', 'Front-end');
+
+INSERT INTO TOPICO(titulo, mensagem, data_criacao, status, autor_id, curso_id) VALUES('Dúvida', 'Erro ao criar projeto', '2019-05-05 18:00:00', 'NAO_RESPONDIDO', 1, 1);
+INSERT INTO TOPICO(titulo, mensagem, data_criacao, status, autor_id, curso_id) VALUES('Dúvida 2', 'Projeto não compila', '2019-05-05 19:00:00', 'NAO_RESPONDIDO', 1, 1);
+INSERT INTO TOPICO(titulo, mensagem, data_criacao, status, autor_id, curso_id) VALUES('Dúvida 3', 'Tag HTML', '2019-05-05 20:00:00', 'NAO_RESPONDIDO', 1, 2);
