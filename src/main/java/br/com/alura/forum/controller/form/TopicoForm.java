@@ -1,11 +1,15 @@
 package br.com.alura.forum.controller.form;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import org.springframework.lang.NonNull;
 
 import br.com.alura.forum.modelo.Curso;
 import br.com.alura.forum.modelo.Topico;
 import br.com.alura.forum.repository.CursoRepository;
-import br.com.alura.forum.repository.TopicoRepository;
+import net.bytebuddy.utility.nullability.NeverNull;
 
 //DTO para receber dados de entrada.
 //POJO - Java bean.
@@ -14,9 +18,16 @@ public class TopicoForm {
 //	@Autowired
 //	private CursoRepository topicoRepository;
 //	
+//  Tópicos do bean validation evitam os if´s na classe controller. 
+//  Tem que colocar o @Valid no controller para que o spring use o bean validation. 
+	
+	@NotNull  @Size(min=5) @NotEmpty
 	private String titulo;
+	@NotNull  @Size(min=10) @NotEmpty
 	private String mensagem;
+	@NotNull @NotEmpty
 	private String nomeCurso;
+	
 	public String getTitulo() {
 		return titulo;
 	}

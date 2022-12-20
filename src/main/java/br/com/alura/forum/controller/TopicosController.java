@@ -3,6 +3,8 @@ package br.com.alura.forum.controller;
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -77,7 +79,9 @@ public class TopicosController {
 	//devolvido com sucesso e um novo recurso foi criado no
 	//servidor. Por isso é importante evitar o void
 	//public void cadastrar(@RequestBody TopicoForm form) {
-	public ResponseEntity<TopicoDto> cadastrar(@RequestBody TopicoForm form, UriComponentsBuilder uriBuilder ) {	
+	//@Valid executa as anotações do bean validation.
+	//Se houver algo errado nem entra no método e devolve o código 400.
+	public ResponseEntity<TopicoDto> cadastrar(@RequestBody @Valid TopicoForm form, UriComponentsBuilder uriBuilder ) {	
 		
 		Topico topico = form.converter(cursoRepository);
 		topicoRepository.save(topico);
