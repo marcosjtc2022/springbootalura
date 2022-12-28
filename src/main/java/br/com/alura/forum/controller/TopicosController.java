@@ -12,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,12 +58,16 @@ public class TopicosController {
 	//No método lista o parâmetro não vem no corpo da solicitação como no método post.
 	//Mas vem na url, por isso é necessário colocar o requestparam.
 	//Com o requestparam o spring entende como obrigatório o parâmetro.
+	//@EnableSpringDataWebSupport - Permite passar para o spring data os parâmetros de ordenação e paginação.
+	//Antes de @EnableSpringDataWebSupport  localhost:8081/topicos?pagina=0&qtd=3&ordenacao=titulo
+	//localhost:8081/topicos?page=0&size=10&sort=id,desc&sort=dataCriacao,desc
+	//Só usa o parâmetro de ordenação quando não tem o pageable default.
 	@GetMapping
 	public Page<TopicoDto> lista(@RequestParam(required = false ) String nomeCurso,
-			@RequestParam int pagina, @RequestParam int qtd, @RequestParam String ordenacao ){ //Ao devolver a classe de domínio (JPA), sempre devolve todos os atributos.
+			@PageableDefault(sort= "id" , direction= Direction.DESC, page = 0, size = 10) Pageable paginacao ){ //Ao devolver a classe de domínio (JPA), sempre devolve todos os atributos.
 		                         //Por isso não é uma boa prática!
 		
-		Pageable paginacao = PageRequest.of(pagina, qtd, Direction.ASC, ordenacao);
+		//Pageable paginacao = PageRequest.of(pagina, qtd, Direction.ASC, ordenacao);
 		
 		//Topico topico = new Topico("Duvida", "Duvida com spring" , new Curso("Spring", "Programação"));
 		
