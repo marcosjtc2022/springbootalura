@@ -1,19 +1,18 @@
 package br.com.alura.forum.controller;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -62,6 +61,12 @@ public class TopicosController {
 	//Antes de @EnableSpringDataWebSupport  localhost:8081/topicos?pagina=0&qtd=3&ordenacao=titulo
 	//localhost:8081/topicos?page=0&size=10&sort=id,desc&sort=dataCriacao,desc
 	//Só usa o parâmetro de ordenação quando não tem o pageable default.
+	//@GetMapping
+	//Informa para o spring guardar o retorno do método na cache.
+	//O value="listaDeTopicos" informa identificador único do cache.
+	//Quando ocorre uma nova chamada neste método, o spring acessa a memória e não vai no BD.
+	//Melhor usar cache nas tabelas que são atualizadas raramente.
+	@Cacheable(value="listaDeTopicos")
 	@GetMapping
 	public Page<TopicoDto> lista(@RequestParam(required = false ) String nomeCurso,
 			@PageableDefault(sort= "id" , direction= Direction.DESC, page = 0, size = 10) Pageable paginacao ){ //Ao devolver a classe de domínio (JPA), sempre devolve todos os atributos.
@@ -106,6 +111,8 @@ public class TopicosController {
 	//@Valid executa as anotações do bean validation.
 	//Se houver algo errado nem entra no método e devolve o código 400.
 	@Transactional
+	//Avisa o spring para limpar a cache, allEntries=true limpa tudo. 
+	@CacheEvict(value = "listaDeTopicos", allEntries=true )
 	public ResponseEntity<TopicoDto> cadastrar(@RequestBody @Valid TopicoForm form, UriComponentsBuilder uriBuilder ) {	
 		
 		Topico topico = form.converter(cursoRepository);
@@ -142,6 +149,8 @@ public class TopicosController {
 	//Ao final do método a JPA faz o update e commit automaticamente.
 	@PutMapping("/{id}")
 	@Transactional //Dispara o commit no BD.
+	//Avisa o spring para limpar a cache, allEntries=true limpa tudo. 
+	@CacheEvict(value = "listaDeTopicos", allEntries=true )
 	public ResponseEntity<TopicoDto> atualizar(@PathVariable Long id,@RequestBody @Valid AtualizacaoTopicoForm form) {
 		
 		Optional<Topico> optional = topicoRepository.findById(id);
@@ -163,6 +172,8 @@ public class TopicosController {
 	
 	@DeleteMapping("/{id}")
 	@Transactional
+	//Avisa o spring para limpar a cache, allEntries=true limpa tudo. 
+	@CacheEvict(value = "listaDeTopicos", allEntries=true )
 	public ResponseEntity<?> remover(@PathVariable Long id) {
 		Optional<Topico> optional = topicoRepository.findById(id);
 		
