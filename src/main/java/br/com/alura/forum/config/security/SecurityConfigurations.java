@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 //Como a segurança é bastante dinâmica, é melhor configurar na classe e não no application.
 //<artifactId>spring-boot-starter-security</artifactId>
@@ -21,6 +22,9 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	private AutenticacaoService autenticacaoService;
+	
+	@Autowired
+	private TokenService tokenService;
 	
 	//Configuração de autenticação. Controle de acesso, login, etc.
 	@Override
@@ -38,7 +42,10 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 		.antMatchers(HttpMethod.POST, "/auth" ).permitAll()
 		.anyRequest().authenticated() ///topicos/{id}
 		.and().csrf().disable()
-		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); //usado para autenticar com token.
+		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) //usado para autenticar com token.
+		.and().addFilterBefore(new AutenticacaoViaTokenFilter(tokenService), UsernamePasswordAuthenticationFilter.class); //Spring precisa saber qual a ordem dos filtros, pois, tem um filtro interno de autenticação.
+		//Passa o filtro que quer adicionar e antes de qual filtro quer executar.
+		//Antes de fazer qualquer coisa, roda o filtro para pegar o token.
 		//.and().formLogin(); //Spring gera um formulário de autenticação que recebe as requisições deste formulário.
 		//http.headers().frameOptions().sameOrigin();
 	

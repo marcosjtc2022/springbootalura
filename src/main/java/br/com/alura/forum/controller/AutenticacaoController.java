@@ -38,7 +38,7 @@ public class AutenticacaoController {
 			Authentication authentication = authenticationManager.authenticate(dados);
 			String token = tokenService.gerarToken(authentication);
 			//bearer manda o token junto
-			return ResponseEntity.ok(new TokenDto(token, "bearer"));
+			return ResponseEntity.ok(new TokenDto(token, "Bearer"));
 //			System.out.println(form.getSenha());
 			
 			
