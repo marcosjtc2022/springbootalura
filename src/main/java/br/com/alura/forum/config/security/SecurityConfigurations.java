@@ -14,6 +14,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import br.com.alura.forum.repository.UsuarioRepository;
+
 //Como a segurança é bastante dinâmica, é melhor configurar na classe e não no application.
 //<artifactId>spring-boot-starter-security</artifactId>
 @EnableWebSecurity //Habilita o módulo de segurança da aplicação.
@@ -25,6 +27,9 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	private TokenService tokenService;
+	
+	@Autowired
+	private UsuarioRepository usuarioRepository;
 	
 	//Configuração de autenticação. Controle de acesso, login, etc.
 	@Override
@@ -39,11 +44,12 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 		.antMatchers("/h2-console/**").permitAll()
 		.antMatchers(HttpMethod.GET, "/topicos" ).permitAll()
 		.antMatchers(HttpMethod.GET, "/topicos/*" ).permitAll()
+		.antMatchers(HttpMethod.GET, "/actuator/**" ).permitAll() //Não colocar em produção.
 		.antMatchers(HttpMethod.POST, "/auth" ).permitAll()
 		.anyRequest().authenticated() ///topicos/{id}
 		.and().csrf().disable()
 		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) //usado para autenticar com token.
-		.and().addFilterBefore(new AutenticacaoViaTokenFilter(tokenService), UsernamePasswordAuthenticationFilter.class); //Spring precisa saber qual a ordem dos filtros, pois, tem um filtro interno de autenticação.
+		.and().addFilterBefore(new AutenticacaoViaTokenFilter(tokenService, usuarioRepository), UsernamePasswordAuthenticationFilter.class); //Spring precisa saber qual a ordem dos filtros, pois, tem um filtro interno de autenticação.
 		//Passa o filtro que quer adicionar e antes de qual filtro quer executar.
 		//Antes de fazer qualquer coisa, roda o filtro para pegar o token.
 		//.and().formLogin(); //Spring gera um formulário de autenticação que recebe as requisições deste formulário.
