@@ -46,6 +46,7 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 		.antMatchers(HttpMethod.GET, "/topicos/*" ).permitAll()
 		.antMatchers(HttpMethod.GET, "/actuator/**" ).permitAll() //Não colocar em produção.
 		.antMatchers(HttpMethod.POST, "/auth" ).permitAll()
+		.antMatchers(HttpMethod.GET, "/swagger-ui.html" ).permitAll()
 		.anyRequest().authenticated() ///topicos/{id}
 		.and().csrf().disable()
 		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) //usado para autenticar com token.
@@ -60,7 +61,7 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 	//Configuração de recursos estáticos (js, css, imagens). Front end!
 	@Override
 	public void configure(WebSecurity web) throws Exception {
-		
+		web.ignoring().antMatchers("/**.html", "/v2/api-docs", "/webjars/**", "/configuration/**", "/swagger-resources/**");
 	}
 	
 	 @Override
